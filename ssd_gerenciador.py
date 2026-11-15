@@ -11,7 +11,6 @@ import os
 import shutil
 import json
 import urllib.parse
-import cgi
 import io
 from pathlib import Path
 from datetime import datetime
