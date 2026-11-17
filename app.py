@@ -23,7 +23,7 @@ from flask import (Flask, abort, jsonify, redirect, render_template, request,
 from werkzeug.security import check_password_hash, generate_password_hash
 
 HOME = Path.home()
-NO_TERMUX = "com.termux" in os.environ.get("PREFIX", "")
+NO_TERMUX = "com.termux" in os.environ.get("PREFIX", "") or (HOME / "storage" / "shared").is_dir()
 
 
 def pasta_downloads_pc():
