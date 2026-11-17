@@ -1,7 +1,7 @@
 # 💾 MeuSSD
 
-Servidor pessoal de arquivos que roda no celular (Termux) e é acessado pelo navegador
-de qualquer aparelho na mesma rede Wi‑Fi: computador, outro celular, tablet.
+Servidor pessoal de arquivos. Roda no PC (Linux) ou no celular (Termux) e é acessado
+pelo navegador de qualquer aparelho na mesma rede Wi‑Fi: computador, celular, tablet.
 
 ## Recursos
 
@@ -16,9 +16,24 @@ de qualquer aparelho na mesma rede Wi‑Fi: computador, outro celular, tablet.
 - Acesso protegido por senha
 - Atende vários aparelhos ao mesmo tempo (servidor Waitress)
 
-Os arquivos ficam em `Armazenamento interno/MeuSSD`, que aparece na galeria e no gerenciador de arquivos do Android.
+Os arquivos ficam em:
 
-## Instalação no Termux
+- **PC:** `~/MeuSSD`. O vigia observa a sua pasta Downloads.
+- **Celular:** `Armazenamento interno/MeuSSD`, que aparece na galeria do Android.
+
+## Instalação no PC (Ubuntu / Linux Mint / Debian)
+
+```bash
+sudo apt install python3-pip ffmpeg unzip
+cd ~ && unzip ~/Downloads/meussd.zip && cd meussd
+pip install --user -r requirements.txt
+./iniciar.sh
+```
+
+Se o zip foi salvo em outra pasta (por exemplo `~/Transferências`), troque o caminho no `unzip`.
+Se o firewall estiver ligado, libere a porta para os outros aparelhos: `sudo ufw allow 9000/tcp`.
+
+## Instalação no celular (Termux)
 
 ```bash
 pkg update && pkg upgrade

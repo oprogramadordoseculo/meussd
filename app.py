@@ -23,8 +23,32 @@ from flask import (Flask, abort, jsonify, redirect, render_template, request,
 from werkzeug.security import check_password_hash, generate_password_hash
 
 HOME = Path.home()
-RAIZ = Path(os.environ.get("MEUSSD_DIR", HOME / "storage" / "shared" / "MeuSSD")).expanduser()
-DOWNLOADS = Path(os.environ.get("MEUSSD_DOWNLOADS", HOME / "storage" / "downloads")).expanduser()
+NO_TERMUX = "com.termux" in os.environ.get("PREFIX", "")
+
+
+def pasta_downloads_pc():
+    try:
+        r = subprocess.run(["xdg-user-dir", "DOWNLOAD"], capture_output=True, text=True, timeout=3)
+        caminho = Path(r.stdout.strip())
+        if r.returncode == 0 and caminho.is_dir() and caminho != HOME:
+            return caminho
+    except (OSError, subprocess.SubprocessError):
+        pass
+    for nome in ("Downloads", "Transferências"):
+        if (HOME / nome).is_dir():
+            return HOME / nome
+    return HOME / "Downloads"
+
+
+if NO_TERMUX:
+    RAIZ_PADRAO = HOME / "storage" / "shared" / "MeuSSD"
+    DOWNLOADS_PADRAO = HOME / "storage" / "downloads"
+else:
+    RAIZ_PADRAO = HOME / "MeuSSD"
+    DOWNLOADS_PADRAO = pasta_downloads_pc()
+
+RAIZ = Path(os.environ.get("MEUSSD_DIR", RAIZ_PADRAO)).expanduser()
+DOWNLOADS = Path(os.environ.get("MEUSSD_DOWNLOADS", DOWNLOADS_PADRAO)).expanduser()
 DADOS = Path(os.environ.get("MEUSSD_DADOS", HOME / ".meussd")).expanduser()
 PORTA = int(os.environ.get("MEUSSD_PORTA", "9000"))
 SEM_SENHA = os.environ.get("MEUSSD_SEM_SENHA") == "1"
@@ -719,7 +743,7 @@ def preparar_raiz():
         teste.unlink()
     except OSError as e:
         print(f"\n❌ Não consegui usar a pasta {RAIZ}\n   Motivo: {e}")
-        if "storage" in str(RAIZ):
+        if NO_TERMUX:
             print("   No Termux, rode:  termux-setup-storage   e aceite a permissão.\n")
         sys.exit(1)
 
@@ -747,7 +771,7 @@ def main():
     if "--migrar" in sys.argv:
         migrar_antigo()
         return
-    if PASTA_ANTIGA.is_dir() and any(PASTA_ANTIGA.rglob("*.*")) and PASTA_ANTIGA.resolve() != raiz_real():
+    if NO_TERMUX and PASTA_ANTIGA.is_dir() and any(PASTA_ANTIGA.rglob("*.*")) and PASTA_ANTIGA.resolve() != raiz_real():
         print(f"⚠️  Há arquivos na pasta antiga {PASTA_ANTIGA} (invisível para a galeria).")
         print("   Para trazê-los ao MeuSSD:  python app.py --migrar\n")
 
