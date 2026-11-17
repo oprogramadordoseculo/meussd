@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f1117">
+<title>MeuSSD — Entrar</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="tela-login">
+<form method="post" class="cartao-login">
+  <div class="logo">💾 MeuSSD</div>
+  {% if primeira %}
+    <p class="sub">Primeiro acesso: crie a senha que protegerá seus arquivos.</p>
+    <input type="password" name="senha" placeholder="Nova senha" autofocus required autocomplete="new-password">
+    <input type="password" name="confirma" placeholder="Repita a senha" required autocomplete="new-password">
+    <button class="btn primario">Criar senha e entrar</button>
+  {% else %}
+    <p class="sub">Digite sua senha</p>
+    <input type="password" name="senha" placeholder="Senha" autofocus required autocomplete="current-password">
+    <button class="btn primario">Entrar</button>
+  {% endif %}
+  {% if erro %}<p class="erro">{{ erro }}</p>{% endif %}
+</form>
+</body>
+</html>
