@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1117">
+<title>MeuSSD</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topo">
+  <div class="linha-topo">
+    <a class="logo" href="#/">💾 MeuSSD</a>
+    <div class="busca">
+      <input id="busca" type="search" placeholder="Buscar em todo o MeuSSD…" autocomplete="off">
+    </div>
+    <button class="icone" id="btn-menu" title="Menu">☰</button>
+  </div>
+  <div class="disco" id="disco" title="Armazenamento">
+    <div class="disco-barra"><div id="disco-uso"></div></div>
+    <span id="disco-texto">…</span>
+  </div>
+<nav class="barra">
+  <button class="icone" id="btn-voltar" title="Pasta acima">⬆</button>
+  <div class="trilha" id="trilha"></div>
+  <div class="acoes">
+    <button class="btn" id="btn-nova-pasta">📁 <span>Nova pasta</span></button>
+    <button class="btn primario" id="btn-enviar">⬆️ <span>Enviar</span></button>
+    <button class="btn" id="btn-link">🔗 <span>Baixar link</span></button>
+    <select id="ordem" title="Ordenar">
+      <option value="nome">Nome</option>
+      <option value="data">Mais recentes</option>
+      <option value="tamanho">Maiores</option>
+      <option value="tipo">Tipo</option>
+    </select>
+    <button class="icone" id="btn-visao" title="Grade / lista">▦</button>
+  </div>
+</nav>
+
+<div class="selecao" id="barra-selecao" hidden>
+  <span id="sel-contagem"></span>
+  <div class="acoes">
+    <button class="btn" data-acao="renomear">✏️ <span>Renomear</span></button>
+    <button class="btn" data-acao="mover">📦 <span>Mover</span></button>
+    <button class="btn" data-acao="copiar">📄 <span>Copiar</span></button>
+    <button class="btn" data-acao="baixar">⬇️ <span>Baixar</span></button>
+    <button class="btn perigo" data-acao="apagar">🗑️ <span>Apagar</span></button>
+    <button class="btn" data-acao="restaurar" hidden>♻️ <span>Restaurar</span></button>
+    <button class="icone" data-acao="todos" title="Selecionar tudo">☑</button>
+    <button class="icone" data-acao="cancelar" title="Cancelar">✕</button>
+  </div>
+</div>
+</header>
+
+<main id="conteudo" class="grade"></main>
+
+<div id="soltar" class="soltar" hidden>Solte os arquivos para enviar</div>
+<input type="file" id="arquivo-input" multiple hidden>
+
+<aside class="painel" id="painel-tarefas" hidden>
+  <div class="painel-topo"><b>Transferências</b><button class="icone" id="fechar-tarefas">✕</button></div>
+  <div id="lista-tarefas"></div>
+</aside>
+
+<dialog id="menu" class="menu-lateral">
+  <button class="item-menu" data-ir="#/">🏠 Início</button>
+  <button class="item-menu" data-ir="#/Videos">🎬 Vídeos</button>
+  <button class="item-menu" data-ir="#/Imagens">🖼️ Imagens</button>
+  <button class="item-menu" data-ir="#lixeira">🗑️ Lixeira</button>
+  <hr>
+  <label class="item-menu"><input type="checkbox" id="vigia-ativo"> 👀 Vigia de Downloads</label>
+  <div class="menu-info" id="vigia-info"></div>
+  <button class="item-menu" id="btn-ver-tarefas">⏬ Transferências</button>
+  {% if com_senha %}<a class="item-menu" href="/sair">🚪 Sair</a>{% endif %}
+</dialog>
+
+<dialog id="dlg-texto" class="dialogo">
+  <form method="dialog">
+    <h3 id="dlg-texto-titulo"></h3>
+    <input id="dlg-texto-valor" autocomplete="off">
+    <div class="botoes">
+      <button class="btn" value="cancelar" formnovalidate>Cancelar</button>
+      <button class="btn primario" value="ok">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-confirmar" class="dialogo">
+  <form method="dialog">
+    <h3 id="dlg-confirmar-titulo"></h3>
+    <p id="dlg-confirmar-texto"></p>
+    <div class="botoes">
+      <button class="btn" value="cancelar">Cancelar</button>
+      <button class="btn perigo" value="ok" id="dlg-confirmar-ok">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-destino" class="dialogo">
+  <form method="dialog">
+    <h3 id="dlg-destino-titulo">Mover para…</h3>
+    <div class="trilha pequena" id="destino-trilha"></div>
+    <div class="lista-pastas" id="destino-pastas"></div>
+    <div class="botoes">
+      <button class="btn" value="cancelar">Cancelar</button>
+      <button class="btn primario" value="ok">Aqui</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-link" class="dialogo">
+  <form method="dialog">
+    <h3>🔗 Baixar vídeo por link</h3>
+    <p class="dica">Facebook, Instagram, YouTube, TikTok, X… O vídeo é salvo de verdade no MeuSSD, não fica dependendo do link.</p>
+    <input id="link-url" type="url" placeholder="Cole o link aqui" autocomplete="off">
+    <label class="dica">Salvar em: <b id="link-destino"></b></label>
+    <div class="botoes">
+      <button class="btn" value="cancelar" formnovalidate>Cancelar</button>
+      <button class="btn primario" value="ok">Baixar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="visor" class="visor" hidden>
+  <div class="visor-topo">
+    <span id="visor-nome"></span>
+    <div>
+      <a class="icone" id="visor-baixar" title="Baixar">⬇️</a>
+      <button class="icone" id="visor-fechar" title="Fechar">✕</button>
+    </div>
+  </div>
+  <button class="visor-nav ant" id="visor-ant">‹</button>
+  <div class="visor-palco" id="visor-palco"></div>
+  <button class="visor-nav prox" id="visor-prox">›</button>
+</div>
+
+<div id="avisos" class="avisos"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
