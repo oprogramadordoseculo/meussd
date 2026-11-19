@@ -1,4 +1,4 @@
-const CACHE = "notas-v1";
+const CACHE = "notas-v2";
 const ARQUIVOS = [
   "./", "index.html", "estilo.css", "icone.svg", "manifest.webmanifest",
   "js/app.js", "js/armazenamento.js", "js/config.js",

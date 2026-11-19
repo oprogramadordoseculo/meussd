@@ -1,12 +1,11 @@
-// Cole aqui a configuração do seu projeto Firebase
-// (Console do Firebase → Configurações do projeto → Seus apps → App da Web → "Configuração do SDK").
-// Enquanto estiver com "COLE_AQUI", o app funciona em modo local (só neste aparelho).
+// Configuração do projeto Firebase "minhas-notas".
+// Estes dados identificam o projeto; quem protege as notas são as regras em firestore.rules.
 
 export const firebaseConfig = {
-  apiKey: "COLE_AQUI",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
+  apiKey: "AIzaSyCkgXgZYvuJwn-g9RQcMoJPIJcRw3TAJRA",
+  authDomain: "minhas-notas-50e0f.firebaseapp.com",
+  projectId: "minhas-notas-50e0f",
+  storageBucket: "minhas-notas-50e0f.firebasestorage.app",
+  messagingSenderId: "695338580127",
+  appId: "1:695338580127:web:8a334a35b5c61ad1428aaa",
 };
