@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16171c" media="(prefers-color-scheme: dark)">
+<title>Minhas Notas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone.svg">
+<link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" id="hl-tema" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<div id="carregando" class="carregando"><div class="girando"></div></div>
+
+<section id="tela-login" class="tela-login" hidden>
+  <div class="cartao-login">
+    <div class="marca"><span class="marca-icone">✎</span> Minhas <b>Notas</b></div>
+    <p class="sub">Suas anotações nos celulares e no PC, sempre sincronizadas.</p>
+    <button class="btn primario largo" id="entrar-google">
+      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+      Entrar com Google
+    </button>
+    <div class="ou"><span>ou com e-mail</span></div>
+    <form id="form-email" class="form-email">
+      <input type="email" id="login-email" placeholder="E-mail" autocomplete="email" required>
+      <input type="password" id="login-senha" placeholder="Senha (mín. 6 caracteres)" autocomplete="current-password" minlength="6" required>
+      <div class="linha">
+        <button class="btn largo" type="submit" id="btn-entrar-email">Entrar</button>
+        <button class="btn largo" type="button" id="btn-criar-conta">Criar conta</button>
+      </div>
+    </form>
+    <p class="erro" id="login-erro"></p>
+  </div>
+</section>
+
+<div id="app" class="app" hidden>
+
+  <aside class="lateral" id="lateral">
+    <header class="lateral-topo">
+      <div class="marca"><span class="marca-icone">✎</span> Minhas <b>Notas</b></div>
+      <div class="lateral-acoes">
+        <button class="icone" id="btn-tema" title="Tema claro/escuro">◐</button>
+        <button class="icone" id="btn-conta" title="Conta e ferramentas">⋯</button>
+      </div>
+    </header>
+
+    <div class="busca">
+      <input type="search" id="busca" placeholder="Buscar notas…  (/)" autocomplete="off">
+    </div>
+
+    <div class="criar">
+      <button class="btn primario" id="btn-nova">＋ Nova nota</button>
+      <button class="btn" id="btn-link" title="Criar nota a partir de uma página da internet">🔗 Do link</button>
+    </div>
+
+    <nav class="filtros" id="filtros">
+      <button data-filtro="todas" class="ativo">Todas <span></span></button>
+      <button data-filtro="fixadas">📌 <span></span></button>
+      <button data-filtro="arquivadas">Arquivo <span></span></button>
+      <button data-filtro="lixeira">Lixeira <span></span></button>
+    </nav>
+
+    <div class="refinar">
+      <select id="filtro-caderno" title="Caderno"><option value="">Todos os cadernos</option></select>
+      <select id="ordem" title="Ordenar">
+        <option value="atualizada">Recentes</option>
+        <option value="criada">Criação</option>
+        <option value="titulo">A–Z</option>
+      </select>
+    </div>
+    <div class="tags-filtro" id="tags-filtro"></div>
+
+    <ul class="lista-notas" id="lista-notas"></ul>
+
+    <footer class="lateral-rodape">
+      <span id="status-sync" class="status-sync">●</span>
+      <span id="usuario-nome"></span>
+    </footer>
+  </aside>
+
+  <main class="editor" id="editor">
+    <div class="vazio-editor" id="vazio-editor">
+      <div class="vazio-icone">✎</div>
+      <p>Selecione uma nota ou crie uma nova.</p>
+      <button class="btn primario" id="btn-nova-vazio">＋ Criar nota</button>
+      <p class="atalhos-dica">Atalhos: <kbd>Alt</kbd>+<kbd>N</kbd> nova nota · <kbd>/</kbd> buscar · <kbd>Ctrl</kbd>+<kbd>E</kbd> alternar leitura · <kbd>F11</kbd> modo foco</p>
+    </div>
+
+    <div class="nota" id="nota" hidden>
+      <header class="nota-topo">
+        <button class="icone so-celular" id="btn-voltar" title="Voltar">←</button>
+        <input id="titulo" class="titulo" placeholder="Título da nota…" autocomplete="off">
+        <span class="salvo" id="salvo"></span>
+        <div class="nota-acoes">
+          <div class="modos" id="modos">
+            <button data-modo="editar" title="Escrever">✎</button>
+            <button data-modo="dividir" title="Lado a lado" class="so-largo">◫</button>
+            <button data-modo="ler" title="Ler">👁</button>
+          </div>
+          <button class="icone" id="btn-fixar" title="Fixar no topo">📌</button>
+          <button class="icone" id="btn-foco" title="Modo foco (F11)">⛶</button>
+          <button class="icone" id="btn-mais" title="Mais opções">⋮</button>
+        </div>
+      </header>
+
+      <div class="lixeira-aviso" id="lixeira-aviso" hidden>
+        Esta nota está na lixeira.
+        <button class="btn" id="btn-restaurar">Restaurar</button>
+        <button class="btn perigo" id="btn-excluir-sempre">Excluir para sempre</button>
+      </div>
+
+      <div class="ferramentas" id="ferramentas">
+        <button data-fmt="h1" title="Título">H1</button>
+        <button data-fmt="h2" title="Subtítulo">H2</button>
+        <button data-fmt="negrito" title="Negrito (Ctrl+B)"><b>B</b></button>
+        <button data-fmt="italico" title="Itálico (Ctrl+I)"><i>I</i></button>
+        <button data-fmt="riscado" title="Riscado"><s>S</s></button>
+        <span class="divisor"></span>
+        <button data-fmt="lista" title="Lista">•≡</button>
+        <button data-fmt="numerada" title="Lista numerada">1.</button>
+        <button data-fmt="tarefa" title="Tarefa">☑</button>
+        <span class="divisor"></span>
+        <button data-fmt="citacao" title="Citação">❝</button>
+        <button data-fmt="codigo" title="Bloco de código">{ }</button>
+        <button data-fmt="link" title="Link (Ctrl+K)">🔗</button>
+        <button data-fmt="wiki" title="Ligar a outra nota [[ ]]">[[ ]]</button>
+        <button data-fmt="linha" title="Linha divisória">―</button>
+        <button data-fmt="data" title="Inserir data e hora">🕒</button>
+        <span class="divisor"></span>
+        <button data-fmt="fonte" title="Fonte de escrita (serifada/normal)">Aa</button>
+      </div>
+
+      <div class="corpo" id="corpo">
+        <textarea id="texto" class="texto" placeholder="Comece a escrever…  Use # para títulos, - para listas, - [ ] para tarefas, #etiquetas e [[Outra nota]] para ligar notas." spellcheck="true"></textarea>
+        <article id="previa" class="previa"></article>
+      </div>
+
+      <footer class="nota-rodape">
+        <span id="contagem"></span>
+        <span id="caderno-rotulo" class="caderno-rotulo"></span>
+        <span id="origem" class="origem"></span>
+        <div id="referencias" class="referencias"></div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<dialog id="menu-nota" class="menu-pop">
+  <button data-acao="caderno">📒 Mover para caderno…</button>
+  <button data-acao="duplicar">⧉ Duplicar</button>
+  <button data-acao="copiar">📋 Copiar texto</button>
+  <button data-acao="exportar">⬇ Baixar como .md</button>
+  <button data-acao="compartilhar">↗ Compartilhar</button>
+  <button data-acao="arquivar">🗄 Arquivar</button>
+  <button data-acao="lixeira" class="perigo">🗑 Mover para a lixeira</button>
+</dialog>
+
+<dialog id="menu-conta" class="menu-pop">
+  <div class="conta-info" id="conta-info"></div>
+  <button data-acao="importar">📥 Importar arquivos .txt / .md</button>
+  <button data-acao="colar">📝 Colar várias notas de uma vez</button>
+  <button data-acao="exportar-tudo">📦 Baixar todas as notas (.zip)</button>
+  <button data-acao="esvaziar">🗑 Esvaziar lixeira</button>
+  <button data-acao="sair" class="perigo">🚪 Sair</button>
+</dialog>
+
+<dialog id="dlg-texto" class="dialogo">
+  <form method="dialog">
+    <h3 id="dlg-texto-titulo"></h3>
+    <p id="dlg-texto-dica" class="dica"></p>
+    <input id="dlg-texto-valor" autocomplete="off" list="dlg-texto-lista">
+    <datalist id="dlg-texto-lista"></datalist>
+    <div class="botoes">
+      <button class="btn" value="cancelar" formnovalidate>Cancelar</button>
+      <button class="btn primario" value="ok">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-colar" class="dialogo largo">
+  <form method="dialog">
+    <h3>📝 Colar várias notas</h3>
+    <p class="dica">Cole aqui o texto das notas antigas (por exemplo, do app da Motorola). Separe uma nota da outra com uma linha contendo apenas <b>---</b>. A primeira linha de cada uma vira o título.</p>
+    <textarea id="colar-texto" rows="12" placeholder="Primeira nota&#10;texto…&#10;---&#10;Segunda nota&#10;texto…"></textarea>
+    <div class="botoes">
+      <button class="btn" value="cancelar" formnovalidate>Cancelar</button>
+      <button class="btn primario" value="ok">Criar notas</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-confirmar" class="dialogo">
+  <form method="dialog">
+    <h3 id="dlg-confirmar-titulo"></h3>
+    <p id="dlg-confirmar-texto" class="dica"></p>
+    <div class="botoes">
+      <button class="btn" value="cancelar">Cancelar</button>
+      <button class="btn perigo cheio" value="ok" id="dlg-confirmar-ok">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+
+<input type="file" id="arquivo-importar" accept=".txt,.md,.markdown,text/plain,text/markdown" multiple hidden>
+<div id="avisos" class="avisos"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

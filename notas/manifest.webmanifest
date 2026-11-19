@@ -1,0 +1,14 @@
+{
+  "name": "Minhas Notas",
+  "short_name": "Notas",
+  "description": "Bloco de notas sincronizado entre celulares e PC.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6f2",
+  "theme_color": "#2f7a55",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
