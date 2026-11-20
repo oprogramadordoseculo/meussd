@@ -1,6 +1,6 @@
-const CACHE = "notas-v2";
+const CACHE = "notas-v3";
 const ARQUIVOS = [
-  "./", "index.html", "estilo.css", "icone.svg", "manifest.webmanifest",
+  "./", "index.html", "estilo.css", "icone.svg", "icone-192.png", "icone-512.png", "manifest.webmanifest",
   "js/app.js", "js/armazenamento.js", "js/config.js",
 ];
 const CDNS = ["cdn.jsdelivr.net", "www.gstatic.com"];
