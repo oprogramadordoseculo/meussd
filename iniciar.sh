@@ -23,6 +23,9 @@ case "$1" in
   log)
     tail -n 40 -f ~/.meussd/meussd.log
     exit 0 ;;
+  ip|endereco)
+    "$PY" -c "from app import ip_local, PORTA; ip = ip_local(); print(f'Endereço atual: http://{ip}:{PORTA}' if ip else 'Sem Wi-Fi conectado.')" 2>/dev/null
+    exit 0 ;;
 esac
 
 if [ $TERMUX = 1 ]; then
@@ -46,7 +49,7 @@ sleep 3
 if kill -0 "$(cat "$PID_ARQ")" 2>/dev/null; then
   head -n 12 ~/.meussd/saida.log
   echo ""
-  echo "Para parar:  ./iniciar.sh parar   |   Ver log:  ./iniciar.sh log"
+  echo "Parar: ./iniciar.sh parar  |  Log: ./iniciar.sh log  |  Endereço atual: ./iniciar.sh ip"
 else
   echo "❌ O MeuSSD não iniciou. Erro:"
   tail -n 20 ~/.meussd/saida.log

@@ -725,12 +725,18 @@ def api_vigia():
 # ── Inicialização ─────────────────────────────────────────────────────
 
 def ip_local():
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("10.255.255.255", 1))
-            return s.getsockname()[0]
-    except OSError:
-        return None
+    candidatos = []
+    for alvo in ("192.168.0.1", "192.168.1.1", "10.0.0.1", "10.255.255.255"):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.connect((alvo, 1))
+                ip = s.getsockname()[0]
+        except OSError:
+            continue
+        if ip.startswith(("192.168.", "172.")) or (ip.startswith("10.") and not ip.startswith("10.0.2.")):
+            return ip
+        candidatos.append(ip)
+    return candidatos[0] if candidatos else None
 
 
 def preparar_raiz():
